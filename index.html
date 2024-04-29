@@ -6,7 +6,7 @@
     <title>NOAA MD</title>
 </head>
 <body>
-    <label for="mdNumber">SPC Meso. Discussions: Enter Number:</label>
+    <label for="mdNumber">SPC Meso. Discussions, Enter Number:</label>
     <input type="text" id="mdNumber" name="mdNumber" maxlength="4" oninput="formatMDNumber(this)">
     <button onclick="goToMD()">Go</button>
 
@@ -24,6 +24,12 @@
                 // Convert to 4-digit format
                 mdNumber = mdNumber.padStart(4, '0');
                 window.location.href = "meso_disc/md" + mdNumber + ".html";
+            }
+        }
+
+        function handleEnter(event) {
+            if (event.key === "Enter") {
+                goToMD();
             }
         }
     </script>
