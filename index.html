@@ -3,14 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello, World!123</title>
-    <iframe scr="https://drive.google.com/file/d/1W482-JrHkm4nEvOEjABxJAmPs5DjuDRw/preview" allow="autoplay"></iframe>
-    <img src="https://drive.google.com/uc?id=1W482-JrHkm4nEvOEjABxJAmPs5DjuDRw">
-    
+    <title>NOAA MD</title>
 </head>
 <body>
+    <label for="mdNumber">Enter MD Number:</label>
+    <input type="text" id="mdNumber" name="mdNumber" maxlength="4" oninput="formatMDNumber(this)">
+    <button onclick="goToMD()">Go</button>
 
-    <h1>Hello, World!</h1>
+    <script>
+        function formatMDNumber(input) {
+            // Remove any non-numeric characters
+            input.value = input.value.replace(/\D/g,'');
+            // Pad with leading zeros to make it 4 digits
+            input.value = input.value.padStart(4, '0');
+        }
 
+        function goToMD() {
+            var mdNumber = document.getElementById("mdNumber").value;
+            if (mdNumber !== "") {
+                window.location.href = "meso_disc/md" + mdNumber + ".html";
+            }
+        }
+    </script>
 </body>
 </html>
