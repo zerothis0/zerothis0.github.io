@@ -6,24 +6,17 @@
     <title>NOAA MD</title>
 </head>
 <body>
-    <label for="mdNumber">SPC Meso. Discussions, Enter Number:</label>
-    <input type="text" id="mdNumber" name="mdNumber" maxlength="4" oninput="formatMDNumber(this)">
+    <label for="mdNumber">SPC conv. dis., Enter MD Number:</label>
+    <input type="text" id="mdNumber" name="mdNumber" maxlength="4" onkeydown="handleKeyPress(event)">
     <button onclick="goToMD()">Go</button>
 
     <script>
-        function formatMDNumber(input) {
-            // Remove any non-numeric characters
-            var numericInput = input.value.replace(/\D/g,'');
-            // Pad with leading zeros to make it 4 digits
-            var paddedInput = numericInput.padStart(4, '0');
-            // Update input value with the padded input
-            input.value = paddedInput;
-        }
-
         function goToMD() {
             var mdNumber = document.getElementById("mdNumber").value;
             if (mdNumber !== "") {
-                window.location.href = "meso_disc/md" + mdNumber + ".html";
+                // Convert to 4-digit format
+                var paddedNumber = mdNumber.padStart(4, '0');
+                window.location.href = "meso_disc/md" + paddedNumber + ".html";
             }
         }
 
