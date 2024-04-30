@@ -1,30 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NOAA MD</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mesoscale precip. discsussion</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      margin-top: 5px;
+    }
+    #container {
+      display: flex;
+      align-items: flex-start; /* 설명을 이미지의 위에 정렬 */
+    }
+    #image-container {
+      margin-top: 10px;
+      flex: 1; /* 이미지 컨테이너가 남은 공간을 차지하도록 설정 */
+    }
+    #display-image {
+      max-width: 100%;
+      max-height: 50vh; /* 최대 높이 설정 */
+      margin-top: 10px;
+    }
+    #open-button {
+      padding: 1px 1px;
+      font-size: 16px;
+      cursor:pointer;
+    }
+    #description {
+      flex: 1; /* 설명이 이미지 옆에 정렬되도록 설정 */
+      margin-left: 20px; /* 이미지와의 간격 조정 */
+      margin-top: 10px; /* 이미지와 설명 간의 간격 조정 */
+      white-space: pre-line; /* 줄바꿈 유지 */
+    }
+    #current-discussion-info {
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
 <body>
-    <label for="mdNumber">SPC conv. dis., Enter MD Number:</label>
-    <input type="text" id="mdNumber" name="mdNumber" maxlength="4" onkeydown="handleKeyPress(event)">
-    <button onclick="goToMD()">Go</button>
+  <div id="current-discussion-info">The current discussion goes up to [<span id="maxlen-info"></span>]</div>
+  <label for="mcd-number">Enter Meso. Precip. Discussion Number:</label>
+  <input type="number" id="mcd-number" onkeydown="handleKeyDown(event)" onchange="validateNumber()">
+  <button id="open-button" onclick="fetchMaxlen()">Open Discussion</button>
 
-    <script>
-        function goToMD() {
-            var mdNumber = document.getElementById("mdNumber").value;
-            if (mdNumber !== "") {
-                // Convert to 4-digit format
-                var paddedNumber = mdNumber.padStart(4, '0');
-                window.location.href = "meso_disc/md" + paddedNumber + ".html";
-            }
-        }
+  <div id="container">
+    <div id="image-container"></div>
+    <div id="description"></div>
+  </div>
 
-        function handleKeyPress(event) {
-            if (event.key === "Enter") {
-                goToMD();
-            }
-        }
-    </script>
+  <script>
+    let maxlen;
+    fetchMaxlen();
+
+    async function fetchMaxlen() {
+      fetch('https://www.spc.noaa.gov/products/md/')
+        .then(response => response.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, 'text/html');
+          const centers = doc.querySelectorAll('center');
+          const text = centers[1].textContent;
+          const regex = /#(\d+)\./;
+          const match = text.match(regex);
+          if (match) {
+            maxlen = parseInt(match[1]);
+            document.getElementById('maxlen-info').innerText = maxlen; // 수정된 부분
+          }
+
+          
+        })
+        .catch(error => console.error('Error fetching maxlen:', error));
+    }
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault(); // 화살표 키의 기본 동작 방지
+        decrementNumber();
+      } else if (event.key === 'ArrowRight') {
+        event.preventDefault(); // 화살표 키의 기본 동작 방지
+        incrementNumber();
+      }
+      openImage();
+      
+    })
+
+    function handleKeyDown(event) {
+      if (event.key === 'Enter') {
+        event.preventDefault(); // 엔터 키의 기본 동작 방지
+        // fetchMaxlen(); // Enter 키 입력 시 fetchMaxlen 함수 호출
+        openImage();
+      }
+    }
+
+    function decrementNumber() {
+      const input = document.getElementById('mcd-number');
+      const currentValue = parseInt(input.value);
+      if (currentValue > 1) {
+        input.value = currentValue - 1;
+      }
+    }
+
+    function incrementNumber() {
+      const input = document.getElementById('mcd-number');
+      const currentValue = parseInt(input.value);
+      if (currentValue < maxlen) {
+        input.value = currentValue + 1;
+      }
+    }
+
+    async function openImage() {
+      const numberInput = document.getElementById('mcd-number').value;
+      const imageUrl = `https://www.spc.noaa.gov/products/md/mcd${numberInput.padStart(4, '0')}.png`;
+      const descriptionUrl = `https://www.spc.noaa.gov/products/md/md${numberInput.padStart(4, '0')}.html`;
+
+      const imageContainer = document.getElementById('image-container');
+
+      // Clear previous image if any
+      imageContainer.innerHTML = '';
+
+      // Create new image element
+      const image = document.createElement('img');
+      image.id = 'display-image';
+      image.src = imageUrl;
+
+      // Append image to container
+      imageContainer.appendChild(image);
+
+      // Fetch description
+      fetch(descriptionUrl)
+        .then(response => response.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, 'text/html');
+          const pre = doc.querySelector('pre');
+          const description = pre.textContent;
+
+          // Update description
+          document.getElementById('description').innerText = description;
+        })
+        .catch(error => console.error('Error fetching description:', error));
+    }
+
+    function validateNumber() {
+      const input = document.getElementById('mcd-number');
+      const currentValue = parseInt(input.value);
+      if (isNaN(currentValue)) {
+        input.value = 1; // 숫자가 아니면 1로 설정
+      } else if (currentValue < 1) {
+        input.value = 1; // 1 미만이면 1로 설정
+      } else if (currentValue > maxlen) {
+        input.value = maxlen; // maxlen 초과하면 maxlen으로 설정
+      }
+    }
+  </script>
 </body>
 </html>
