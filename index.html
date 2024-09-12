@@ -7,9 +7,32 @@
   <style>
     #mapCanvas {
       border: 1px solid black;
+      position: relative;
     }
     .container {
       margin: 20px;
+      /* display:flex; */
+      align-items: flex-start;
+    }
+    .main-container {
+      display: flex;
+      align-items: flex-start;
+    }
+    #TC_info {
+      border: 1px solid black;
+      margin-left: 10px;
+      padding: 5px;
+      max-height: 640px;
+      overflow-y: auto;
+      width: 100px;
+      height: 630px;
+    }
+    .copyright {
+      position:absolute;
+      top: 45px;
+      left: 550px;
+      font-size: 12px;
+      color:gray;
     }
   </style>
 </head>
@@ -17,10 +40,17 @@
   <div class="container">
     <label for="tcnumber"> Enter tcnumber:</label>
     <input type="text" id="tcnumber" onfocus="this.select()" value="YYYYNN">
-    <button id="drawPathButton" onclick="updateCanvas()">Draw Path</button>
+    <button id="drawPathButton" onclick="app.drawbtn()">Draw Path</button>
+    <button id="reset" onclick="app.reset()">Reset canvas</button>
 
   </div>
-  <canvas id="mapCanvas" width="640" height="640"></canvas>
-  <script src="main_tc_vis.js"></script>
+  <div class="main-container">
+    <canvas id="mapCanvas" width="640" height="640"></canvas>
+    <div id="TC_info"> </div>
+  </div>
+  <div class="copyright">
+    Dataset was made by Bobby Yoo.
+  </div>
+  <script src="main_tc_vis_class.js"></script>
 </body>
 </html>
