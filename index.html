@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TC Path Drawing</title>
+  <style>
+    #mapCanvas {
+      border: 1px solid black;
+    }
+    .container {
+      margin: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <label for="tcnumber"> Enter tcnumber:</label>
+    <input type="text" id="tcnumber" onfocus="this.select()" value="YYYYNN">
+    <button id="drawPathButton" onclick="updateCanvas()">Draw Path</button>
+
+  </div>
+  <canvas id="mapCanvas" width="640" height="640"></canvas>
+  <script src="main_tc_vis.js"></script>
+</body>
+</html>
